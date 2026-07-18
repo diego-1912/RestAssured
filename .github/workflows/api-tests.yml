@@ -1,0 +1,65 @@
+name: API Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to run against
+        required: false
+        default: qa
+        type: choice
+        options: [dev, qa, staging, prod]
+
+jobs:
+  test:
+    name: ${{ matrix.env }} / ${{ matrix.group }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [dev, qa]
+        group: [smoke, regression]
+    env:
+      API_CLIENT_ID: ${{ secrets.API_CLIENT_ID }}
+      API_CLIENT_SECRET: ${{ secrets.API_CLIENT_SECRET }}
+      API_KEY: ${{ secrets.API_KEY }}
+      API_BEARER_TOKEN: ${{ secrets.API_BEARER_TOKEN }}
+      API_BASIC_USERNAME: ${{ secrets.API_BASIC_USERNAME }}
+      API_BASIC_PASSWORD: ${{ secrets.API_BASIC_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run ${{ matrix.group }} tests against ${{ matrix.env }}
+        run: >
+          mvn -B test
+          -Denv=${{ matrix.env }}
+          -Dgroups=${{ matrix.group }}
+
+      - name: Publish surefire results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports-${{ matrix.env }}-${{ matrix.group }}
+          path: target/surefire-reports/
+
+      - name: Generate Allure report
+        if: always()
+        run: mvn -B io.qameta.allure:allure-maven:report
+
+      - name: Publish Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-${{ matrix.env }}-${{ matrix.group }}
+          path: target/site/allure-maven-plugin/

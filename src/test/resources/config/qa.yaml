@@ -1,0 +1,40 @@
+env: qa
+
+rest:
+  baseUrl: https://jsonplaceholder.typicode.com
+  connectTimeoutMs: 5000
+  readTimeoutMs: 10000
+  slaMs: 3000
+
+graphql:
+  baseUrl: https://graphqlzero.almansi.me/api
+  connectTimeoutMs: 5000
+  readTimeoutMs: 10000
+
+websocket:
+  url: wss://ws.postman-echo.com/raw
+  handshakeTimeoutMs: 5000
+  messageTimeoutMs: 5000
+  reconnectAttempts: 3
+  reconnectDelayMs: 1000
+
+auth:
+  type: NONE
+  tokenUrl: https://example-auth.qa.internal/oauth/token
+  clientIdEnvVar: API_CLIENT_ID
+  clientSecretEnvVar: API_CLIENT_SECRET
+  apiKeyHeader: X-API-Key
+  apiKeyEnvVar: API_KEY
+  bearerTokenEnvVar: API_BEARER_TOKEN
+  basicUsernameEnvVar: API_BASIC_USERNAME
+  basicPasswordEnvVar: API_BASIC_PASSWORD
+
+retry:
+  maxAttempts: 3
+  backoffMs: 500
+  backoffMultiplier: 2.0
+
+db:
+  url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+  usernameEnvVar: DB_USERNAME
+  passwordEnvVar: DB_PASSWORD

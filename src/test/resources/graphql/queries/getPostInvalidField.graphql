@@ -1,0 +1,6 @@
+query GetPostInvalidField($id: ID!) {
+  post(id: $id) {
+    id
+    thisFieldDoesNotExist
+  }
+}

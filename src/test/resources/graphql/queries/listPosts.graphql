@@ -1,0 +1,12 @@
+query ListPosts($page: Int, $limit: Int) {
+  posts(options: { paginate: { page: $page, limit: $limit } }) {
+    data {
+      id
+      title
+      body
+    }
+    meta {
+      totalCount
+    }
+  }
+}
